@@ -16,7 +16,7 @@ if (!fs.existsSync(__dirname+"/dia_output/")){
 }
 
 function addDialogue(file, content){
-  content = {[file.name]: content};
+  content = {"Chapters": content};
   if(fs.existsSync(file.path)){ // Checks if file exists
     let dialogueTree = fs.readFileSync(file.path); // Gets file content
     dialogueTree = JSON.parse(dialogueTree);
