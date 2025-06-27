@@ -1,4 +1,4 @@
-import {Chapter, Location, Character, Mood} from "./diaGen_class.js" // Chapter -> Location -> Character -> Mood -> Dialogue
+import {Chapter, Location, Character, State} from "./diaGen_class.js" // Chapter -> Location -> Character -> State -> Dialogue
 
 import { createRequire } from "module";
 import { dirname } from "path";
@@ -69,9 +69,9 @@ function getContent(){
   if(isNull(prompt_content)) throw "axb";
   let contentCharacter = new Character(prompt_content);
 
-  prompt_content = prompt('MOOD_NAME: ')
+  prompt_content = prompt('STATE_NAME: ')
   if(isNull(prompt_content)) throw "axb";
-  let contentMood = new Mood(prompt_content);
+  let contentState = new State(prompt_content);
 
 
   while(true){
@@ -82,13 +82,13 @@ function getContent(){
     let contentText = prompt('[DIALOGUE_TEXT]: ');
     if(isNull(contentText)) break;
 
-    contentMood.addDialogue(contentName, contentText);
+    contentState.addDialogue(contentName, contentText);
 
     prompt_content = prompt('[|ANOTHER|] (n/y): ')
     if(prompt_content == "n" || prompt_content == "N") break; 
   }
 
-  contentCharacter.addMood(contentMood);
+  contentCharacter.addState(contentState);
   contentLocation.addCharacter(contentCharacter);
   contentChapter.addLocation(contentLocation);
 

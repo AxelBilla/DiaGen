@@ -23,7 +23,7 @@ export class Location{
 
   addCharacter(character){
     if(ReducedMode){
-      this.characters[character.name] = character.moods;
+      this.characters[character.name] = character.states;
     } else {
       this.characters[character.name] = character;
     }
@@ -31,21 +31,21 @@ export class Location{
 }
 
 export class Character{
-  constructor(name, moods={}){
+  constructor(name, states={}){
     this.name=name;
-    this.moods=moods;
+    this.states=states;
   }
   
-  addMood(mood){
+  addState(state){
     if(ReducedMode){
-      this.moods[mood.name] = mood.dialogues;
+      this.states[state.name] = state.dialogues;
     } else {
-      this.moods[mood.name] = mood;
+      this.states[state.name] = state;
     }
   }
 }
 
-export class Mood{
+export class State{
   constructor(name){
     this.name=name;
     this.dialogues={};
