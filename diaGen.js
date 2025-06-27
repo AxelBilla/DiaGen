@@ -15,16 +15,17 @@ if (!fs.existsSync(__dirname+"/dia_output/")){
     fs.mkdirSync(__dirname+"/dia_output/"); // Creates an output folder
 }
 
-function addDialogue(filePath, content){
-  if(fs.existsSync(filePath)){ // Checks if file exists
-    let dialogueTree = fs.readFileSync(filePath); // Gets file content
+function addDialogue(file, content){
+  content = {[file.name]: content};
+  if(fs.existsSync(file.path)){ // Checks if file exists
+    let dialogueTree = fs.readFileSync(file.path); // Gets file content
     dialogueTree = JSON.parse(dialogueTree);
     content = mergeJSON(dialogueTree, content)
   }
-  fs.writeFileSync(filePath, JSON.stringify(content), err => {}) // Writes to file
+  fs.writeFileSync(file.path, JSON.stringify(content), err => {}) // Writes to file
 
   console.log("\n\n[ Dialogue(s) successfully added! ]")
-  console.log("Head over to '"+filePath+"' to see the results")
+  console.log("Head over to '"+file.path+"' to see the results")
 };
 
 function mergeJSON(firstJSON, secondJSON){
@@ -52,7 +53,7 @@ function getPath(){
   if(isNull(fileName)) throw ""; // Throws an error to cancel
 
   const filePath = path.join(__dirname+"/dia_output/", fileName+".json"); // Gives an extension & creates file
-  return filePath;
+  return {path: filePath, name: fileName};
 }
 
 function getContent(){
