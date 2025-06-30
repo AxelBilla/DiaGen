@@ -51,7 +51,36 @@ export class State{
     this.dialogues={};
   }
 
-  addDialogue(name, content){
-    this.dialogues[name] = content;
+  addDialogue(dialogue){
+      this.dialogues[dialogue.name] = dialogue;
+  }
+}
+
+export class Dialogue{
+  constructor(name, content){
+    this.name=name;
+    this.content=content;
+    this.choices={};
+  }
+
+  addChoice(choice){
+      this.choices[choice.name] = choice;
+  }
+
+}
+
+export class Choice{
+  constructor(name, content, options){
+    this.name=name;
+    this.content=content;
+    this.options=options;
+  }
+}
+
+export class Option{
+  constructor(name, content, next){
+    this.name=name;
+    this.content=content;
+    this.next=next;
   }
 }

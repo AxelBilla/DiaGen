@@ -1,4 +1,4 @@
-import {Chapter, Location, Character, State} from "./diaGen_class.js" // Chapter -> Location -> Character -> State -> Dialogue
+import {Chapter, Location, Character, State, Dialogue, Choice, Option} from "./diaGen_class.js" // Chapter -> Location -> Character -> State -> Dialogue
 
 import { createRequire } from "module";
 import { dirname } from "path";
@@ -57,7 +57,7 @@ function getPath(){
 }
 
 function getContent(){
-  console.log("\n");
+  console.log("\n[DATA]");
   let prompt_content = prompt('CHAPTER_NAME: ')
   if(isNull(prompt_content)) throw "axb";
   let contentChapter = new Chapter(prompt_content);
@@ -76,16 +76,46 @@ function getContent(){
 
 
   while(true){
-    console.log("\n");
-    let contentName = prompt('[DIALOGUE_NAME]: ');
+    console.log("\n[DIALOGUES]");
+    let contentName = prompt('DIALOGUE_NAME: ');
     if(isNull(contentName)) break;
 
-    let contentText = prompt('[DIALOGUE_TEXT]: ');
+    let contentText = prompt('DIALOGUE_TEXT: ');
     if(isNull(contentText)) break;
 
-    contentState.addDialogue(contentName, contentText);
+    let contentDialogue = new Dialogue(contentName, contentText);
 
-    prompt_content = prompt('[|ANOTHER|] (n/y): ')
+    prompt_content = prompt('{CHOICES} (n/y): ')
+    if(prompt_content != "n" && prompt_content != "N"){
+      console.log("\n[CHOICES]")
+      let choiceName = prompt('CHOICE_NAME: ')
+      if(isNull(choiceName)) throw "axb";
+
+      let choiceContent = prompt('CHOICE_CONTENT: ')
+      if(isNull(choiceContent)) throw "axb";
+
+      console.log("\n[OPTIONS]")
+      let options = []
+      while(true){
+        let optionName = prompt('OPTION_NAME: ')
+        if(isNull(optionName)) throw "axb";
+
+        let optionContent = prompt('OPTION_CONTENT: ')
+        if(isNull(optionContent)) throw "axb";
+
+        let optionNext = prompt('OPTION_NEXT: ')
+        if(isNull(optionContent)) throw "axb";
+
+        
+        options.push(new Option(optionName, optionContent, optionNext))
+        
+        prompt_content = prompt('[|ANOTHER OPTION|] (n/y): ')
+        if(prompt_content == "n" || prompt_content == "N") break; 
+      }
+      contentDialogue.addChoice(new Choice(choiceName, choiceContent, options))
+    }; 
+    contentState.addDialogue(contentDialogue);
+    prompt_content = prompt('[|ANOTHER DIALOGUE|] (n/y): ')
     if(prompt_content == "n" || prompt_content == "N") break; 
   }
 
