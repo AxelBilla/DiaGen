@@ -57,10 +57,11 @@ export class State{
 }
 
 export class Dialogue{
-  constructor(name, content){
+  constructor(name, content, next){
     this.name=name;
     this.content=content;
     this.choices={};
+    this.next=next;
   }
 
   addChoice(choice){
@@ -82,5 +83,12 @@ export class Option{
     this.name=name;
     this.content=content;
     this.next=next;
+  }
+}
+
+export class Next{
+  constructor(name, type){
+    this.name=name;
+    this.type=type;
   }
 }

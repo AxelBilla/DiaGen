@@ -1,4 +1,4 @@
-import {Chapter, Location, Character, State, Dialogue, Choice, Option} from "./diaGen_class.js" // Chapter -> Location -> Character -> State -> Dialogue
+import {Chapter, Location, Character, State, Dialogue, Choice, Option, Next} from "./diaGen_class.js" // Chapter -> Location -> Character -> State -> Dialogue
 
 import { createRequire } from "module";
 import { dirname } from "path";
@@ -83,7 +83,24 @@ function getContent(){
     let contentText = prompt('DIALOGUE_TEXT: ');
     if(isNull(contentText)) break;
 
-    let contentDialogue = new Dialogue(contentName, contentText);
+    prompt_content = prompt('{DIA_NEXT} (n/y): ')
+    if(isNull(prompt_content)) throw "axb";
+    
+    let contentDialogue
+    
+    if(prompt_content != "n" && prompt_content != "N"){
+      console.log("\n[1]: Dialogue ||| [2]: Choice")
+      let contentNextType = prompt('OPTION_NEXT_TYPE: ')
+      if(isNull(contentNextType)) throw "axb";
+      
+      let contentNextName = prompt('OPTION_NEXT_NAME: ')
+      if(isNull(contentNextName)) throw "axb";
+      
+      contentDialogue = new Dialogue(contentName, contentText, new Next(contentNextName, contentNextType));
+    } else {
+      contentDialogue = new Dialogue(contentName, contentText);
+    }
+    
 
     prompt_content = prompt('{CHOICES} (n/y): ')
     if(prompt_content != "n" && prompt_content != "N"){
@@ -103,13 +120,18 @@ function getContent(){
         let optionContent = prompt('OPTION_CONTENT: ')
         if(isNull(optionContent)) throw "axb";
 
-        let optionNext = prompt('OPTION_NEXT: ')
-        if(isNull(optionContent)) throw "axb";
+        console.log("\n[1]: Dialogue ||| [2]: Choice")
+        let optionNextType = prompt('OPTION_NEXT_TYPE: ')
+        if(isNull(optionNextType)) throw "axb";
+
+        let optionNextName = prompt('OPTION_NEXT_NAME: ')
+        if(isNull(optionNextName)) throw "axb";
 
         
-        options.push(new Option(optionName, optionContent, optionNext))
+        options.push(new Option(optionName, optionContent, new Next(optionNextName, optionNextType)))
         
         prompt_content = prompt('[|ANOTHER OPTION|] (n/y): ')
+        console.log();
         if(prompt_content == "n" || prompt_content == "N") break; 
       }
       contentDialogue.addChoice(new Choice(choiceName, choiceContent, options))
