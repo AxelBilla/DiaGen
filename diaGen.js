@@ -90,10 +90,10 @@ function getContent(){
     
     if(prompt_content != "n" && prompt_content != "N"){
       console.log("\n[1]: Dialogue ||| [2]: Choice")
-      let contentNextType = prompt('OPTION_NEXT_TYPE: ')
+      let contentNextType = prompt('DIALOGUE_NEXT_TYPE: ')
       if(isNull(contentNextType)) throw "axb";
       
-      let contentNextName = prompt('OPTION_NEXT_NAME: ')
+      let contentNextName = prompt('DIALOGUE_NEXT_NAME: ')
       if(isNull(contentNextName)) throw "axb";
       
       contentDialogue = new Dialogue(contentName, contentText, new Next(contentNextName, contentNextType));
@@ -120,15 +120,25 @@ function getContent(){
         let optionContent = prompt('OPTION_CONTENT: ')
         if(isNull(optionContent)) throw "axb";
 
-        console.log("\n[1]: Dialogue ||| [2]: Choice")
+  
+        console.log("\n{OPTIONS_NEXT}\n[1]: Dialogue ||| [2]: In-Event ||| [3]: Out-Event")
         let optionNextType = prompt('OPTION_NEXT_TYPE: ')
         if(isNull(optionNextType)) throw "axb";
 
-        let optionNextName = prompt('OPTION_NEXT_NAME: ')
-        if(isNull(optionNextName)) throw "axb";
+        if(optionNextType== "2" || optionNextType == "3"){
+          let optionNextName = prompt('OPTION_NEXT_METHOD: ')
+          if(isNull(optionNextName)) throw "axb";
 
-        
-        options.push(new Option(optionName, optionContent, new Next(optionNextName, optionNextType)))
+          let optionNextDialogue = prompt('OPTION_NEXT_DIALOGUE: ')
+          if(isNull(optionNextDialogue)) throw "axb";
+
+          options.push(new Option(optionName, optionContent, new Next(optionNextName, optionNextType, optionNextDialogue)))
+        } else {
+          let optionNextName = prompt('OPTION_NEXT_NAME: ')
+          if(isNull(optionNextName)) throw "axb";
+          
+          options.push(new Option(optionName, optionContent, new Next(optionNextName, optionNextType, optionNextName)))
+        }
         
         prompt_content = prompt('[|ANOTHER OPTION|] (n/y): ')
         console.log();

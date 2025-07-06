@@ -87,8 +87,9 @@ export class Option{
 }
 
 export class Next{
-  constructor(name, type){
+  constructor(name, type, dialogue){
     this.name=name;
     this.type=type;
+    this.dialogue=dialogue;
   }
 }
