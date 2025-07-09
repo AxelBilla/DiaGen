@@ -1,0 +1,3 @@
+node ./diaGen.js
+
+pause

@@ -1,4 +1,5 @@
-import {Chapter, Location, Character, State, Dialogue, Choice, Option, Next} from "./diaGen_class.js" // Chapter -> Location -> Character -> State -> Dialogue
+import { match } from "assert";
+import {Chapter, Location, Character, State, Dialogue, Choice, Option, Next, Quest, Step} from "./diaGen_class.js" // Chapter -> Location -> Character -> State -> Dialogue
 
 import { createRequire } from "module";
 import { dirname } from "path";
@@ -15,16 +16,26 @@ if (!fs.existsSync(__dirname+"/dia_output/")){
     fs.mkdirSync(__dirname+"/dia_output/"); // Creates an output folder
 }
 
-function addDialogue(file, content){
-  content = {"Chapters": content};
+function addContent(file, content, type){
+
+  type==1 ? content = {"Chapters": content} : content = {"Quests": content};
+
   if(fs.existsSync(file.path)){ // Checks if file exists
-    let dialogueTree = fs.readFileSync(file.path); // Gets file content
-    dialogueTree = JSON.parse(dialogueTree);
-    content = mergeJSON(dialogueTree, content)
+    let contentTree = fs.readFileSync(file.path); // Gets file content
+    contentTree = JSON.parse(contentTree);
+    content = mergeJSON(contentTree, content)
   }
   fs.writeFileSync(file.path, JSON.stringify(content), err => {}) // Writes to file
 
-  console.log("\n\n[ Dialogue(s) successfully added! ]")
+  switch (type){
+    case 1:
+      console.log("\n\n[ Dialogue(s) successfully added! ]");
+      break;
+    case 2:
+      console.log("\n\n[ Quest(s) successfully added! ]");
+      break;
+  }
+  
   console.log("Head over to '"+file.path+"' to see the results")
 };
 
@@ -56,7 +67,7 @@ function getPath(){
   return {path: filePath, name: fileName};
 }
 
-function getContent(){
+function getContentDialogue(){
   console.log("\n[DATA]");
   let prompt_content = prompt('CHAPTER_NAME: ')
   if(isNull(prompt_content)) throw "axb";
@@ -76,6 +87,7 @@ function getContent(){
 
 
   while(true){
+    console.clear();
     console.log("\n[DIALOGUES]");
     let contentName = prompt('DIALOGUE_NAME: ');
     if(isNull(contentName)) break;
@@ -89,7 +101,7 @@ function getContent(){
     let contentDialogue
     
     if(prompt_content != "n" && prompt_content != "N"){
-      console.log("\n[1]: Dialogue ||| [2]: Choice")
+       console.log("[DIA_NEXT]\n[1]: Dialogue ||| [2]: In-Event ||| [3]: Out-Event")
       let contentNextType = prompt('DIALOGUE_NEXT_TYPE: ')
       if(isNull(contentNextType)) throw "axb";
       
@@ -160,11 +172,109 @@ function getContent(){
   return chapters;
 }
 
-function isNull(object){
-  if(object == null || object == undefined){
-    return true;
+function getContentQuest(){
+  let quests = {} // Wrapper for all quests
+  
+  while(true){
+    console.clear();
+    let contentQuest;
+
+    console.log("\n[DATA]");
+    let questName = prompt('QUEST_NAME: ')
+    if(isNull(questName)) throw "axb";
+
+    let questContent = prompt('QUEST_CONTENT: ')
+    if(isNull(questContent)) throw "axb";
+
+
+    let step_list = [];
+    
+    while(true){
+
+      let contentStep;
+
+      console.log("\n[STEPS]");
+      let stepName = prompt('STEP_NAME: ');
+      if(isNull(stepName)) break;
+
+      let stepContent = prompt('STEP_CONTENT: ')
+      if(isNull(stepContent)) throw "axb";
+
+      let stepID = parseInt(prompt('STEP_ID: '))
+      if(isNull(stepID)) throw "axb";
+
+      prompt_content = prompt('{STEP_NEXT} (n/y): ')
+      if(isNull(prompt_content)) throw "axb";
+      
+      if(prompt_content != "n" && prompt_content != "N"){
+        console.log("\n[STEP_NEXT]\n[1]: Step ||| [2]: Quest ||| [3]: Event")
+        let stepNextType = prompt('STEP_NEXT_TYPE: ')
+        if(isNull(stepNextType)) throw "axb";
+        
+        let stepNextName = prompt('STEP_NEXT_NAME: ')
+        if(isNull(stepNextName)) throw "axb";
+        
+        contentStep = new Step(stepID, stepName, stepContent, new Next(stepNextName, stepNextType));
+      } else {
+        contentStep = new Step(stepID, stepName, stepContent);
+      }
+      
+      step_list.push(contentStep);
+
+      console.log();
+      prompt_content = prompt('[|ANOTHER STEP|] (n/y): ')
+      if(prompt_content == "n" || prompt_content == "N") break; 
+    }
+
+    console.log();
+    prompt_content = prompt('{QUEST_NEXT} (n/y): ')
+    if(isNull(prompt_content)) throw "axb";
+          
+    if(prompt_content != "n" && prompt_content != "N"){
+      console.log("\n[QUEST_NEXT]\n[1]: Quest ||| [2]: Event")
+      let questNextType = prompt('QUEST_NEXT_TYPE: ')
+      if(isNull(questNextType)) throw "axb";
+        
+      let questNextName = prompt('QUEST_NEXT_NAME: ')
+      if(isNull(questNextName)) throw "axb";
+        
+      contentQuest = new Quest(questName, questContent, step_list, new Next(questNextName, questNextType));
+    } else {
+      contentQuest = new Quest(questName, questContent, step_list);
+    }
+
+    contentQuest.orderSteps();
+    quests[contentQuest.name]=contentQuest;
+    
+    console.log();
+    prompt_content = prompt('[|ANOTHER QUEST|] (n/y): ')
+    if(prompt_content == "n" || prompt_content == "N") break; 
   }
+
+  return quests;
+}
+
+function isNull(object){
+  if(object == null || object == undefined) return true;
 }
 
 // Auto exec
-addDialogue(getPath(), getContent());
+console.clear();
+console.log("\n------------------( Welcome to [DIA GEN] )-------------------");
+console.log("\n|            https://github.com/AxelBilla/DiaGen            |");
+console.log("\n|   Support me on Github!   https://github.com/AxelBilla/   |");
+console.log("\n-------------------------------------------------------------\n\n");
+
+console.log('-- What do you want to generate?\n\n[1]: Dialogues | [2]: Quests')
+let prompt_content = prompt('TYPE: ');
+if(isNull(prompt_content)) throw "axb";
+
+prompt_content = parseInt(prompt_content);
+switch(prompt_content){
+  case 1:
+    addContent(getPath(), getContentDialogue(), prompt_content);
+    break;
+  case 2:
+    addContent(getPath(), getContentQuest(), prompt_content);
+    break;
+}

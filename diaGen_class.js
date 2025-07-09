@@ -93,3 +93,34 @@ export class Next{
     this.dialogue=dialogue;
   }
 }
+
+
+
+// QUESTS
+
+export class Quest{
+  constructor(name, content, steps=[], next){
+    this.name=name;
+    this.content=content;
+    this.isCompleted = false;
+    this.steps=steps;
+    this.next=next;
+  }
+
+  addStep(step){
+      this.steps.push(step);
+  }
+
+  orderSteps(){
+    this.steps.sort((a,b)=>{return a.id-b.id})
+  }
+}
+export class Step{
+  constructor(id, name, content, next){
+    this.id=id;
+    this.name=name;
+    this.content=content;
+    this.isCompleted = false;
+    this.next=next;
+  }
+}
