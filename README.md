@@ -3,9 +3,9 @@
 Tool made to ease the creation of dialogues, strictly for personal use.
 <br><br>
 
-# OUTPUT STRUCTURES
+## OUTPUT STRUCTURES
 
-## DIALOGUES
+## Dialogues
 **[CHAPTERS]** <br>
 &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;->&nbsp;**[CHAPTER_NAME]** <br>
 &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;->&nbsp;**[LOCATIONS]** <br>
@@ -35,7 +35,7 @@ Tool made to ease the creation of dialogues, strictly for personal use.
 
 <br>
 
-## QUESTS
+## Quests
 **[QUESTS]** <br>
 &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;->&nbsp;**[QUEST_NAME]** <br>
 &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;->&nbsp;**[CONTENT]** <br>
