@@ -2,6 +2,8 @@
 
 Tool made to ease the creation of dialogues, strictly for personal use.
 <br><br>
+**Requires [Node](https://nodejs.org/)**
+<br>
 
 ## OUTPUT STRUCTURES
 
