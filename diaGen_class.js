@@ -99,8 +99,9 @@ export class Next{
 // QUESTS
 
 export class Quest{
-  constructor(name, content, steps=[], next){
+  constructor(name, header, content, steps=[], next){
     this.name=name;
+    this.header=header;
     this.content=content;
     this.isCompleted = false;
     this.steps=steps;
@@ -116,9 +117,10 @@ export class Quest{
   }
 }
 export class Step{
-  constructor(id, name, content, next){
+  constructor(id, name, header, content, next){
     this.id=id;
     this.name=name;
+    this.header=header;
     this.content=content;
     this.isCompleted = false;
     this.next=next;

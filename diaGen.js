@@ -4,6 +4,7 @@ import {Chapter, Location, Character, State, Dialogue, Choice, Option, Next, Que
 import { createRequire } from "module";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
+import { type } from "os";
 const require = createRequire(import.meta.url);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -16,8 +17,13 @@ if (!fs.existsSync(__dirname+"/dia_output/")){
     fs.mkdirSync(__dirname+"/dia_output/"); // Creates an output folder
 }
 
-function addContent(file, content, type){
 
+class Errors{
+  static EMPTY_FIELD = "[MISSING]: Field cannot be empty.\n";
+  static INVALID_INT = "[INVALID]: Have you tried using a number?\n"
+}
+
+function addContent(file, content, type){
   type==1 ? content = {"Chapters": content} : content = {"Quests": content};
 
   if(fs.existsSync(file.path)){ // Checks if file exists
@@ -27,12 +33,14 @@ function addContent(file, content, type){
   }
   fs.writeFileSync(file.path, JSON.stringify(content), err => {}) // Writes to file
 
+  console.clear();
+
   switch (type){
     case 1:
-      console.log("\n\n[ Dialogue(s) successfully added! ]");
+      console.log("\n[ Dialogue(s) added successfully! ]");
       break;
     case 2:
-      console.log("\n\n[ Quest(s) successfully added! ]");
+      console.log("\n[ Quest(s) added successfully! ]");
       break;
   }
   
@@ -70,19 +78,19 @@ function getPath(){
 function getContentDialogue(){
   console.log("\n[DATA]");
   let prompt_content = prompt('CHAPTER_NAME: ')
-  if(isNull(prompt_content)) throw "axb";
+  if(isNull(prompt_content)) throw Errors.EMPTY_FIELD;
   let contentChapter = new Chapter(prompt_content);
 
   prompt_content = prompt('LOCATION_NAME: ')
-  if(isNull(prompt_content)) throw "axb";
+  if(isNull(prompt_content)) throw Errors.EMPTY_FIELD;
   let contentLocation = new Location(prompt_content);
 
   prompt_content = prompt('CHARACTER_NAME: ')
-  if(isNull(prompt_content)) throw "axb";
+  if(isNull(prompt_content)) throw Errors.EMPTY_FIELD;
   let contentCharacter = new Character(prompt_content);
 
   prompt_content = prompt('STATE_NAME: ')
-  if(isNull(prompt_content)) throw "axb";
+  if(isNull(prompt_content)) throw Errors.EMPTY_FIELD;
   let contentState = new State(prompt_content);
 
 
@@ -96,17 +104,18 @@ function getContentDialogue(){
     if(isNull(contentText)) break;
 
     prompt_content = prompt('{DIA_NEXT} (n/y): ')
-    if(isNull(prompt_content)) throw "axb";
+    if(isNull(prompt_content)) throw Errors.EMPTY_FIELD;
     
     let contentDialogue
     
     if(prompt_content != "n" && prompt_content != "N"){
-       console.log("[DIA_NEXT]\n[1]: Dialogue ||| [2]: In-Event ||| [3]: Out-Event")
-      let contentNextType = prompt('DIALOGUE_NEXT_TYPE: ')
-      if(isNull(contentNextType)) throw "axb";
+
+      console.log("[DIA_NEXT]\n[1]: Dialogue ||| [2]: In-Event ||| [3]: Out-Event")
+      let contentNextType = parseInt(prompt('DIALOGUE_NEXT_TYPE: '), 10);
+      if(isNull(contentNextType) || typeof(contentNextType)!=typeof(0)) throw Errors.INVALID_INT;
       
       let contentNextName = prompt('DIALOGUE_NEXT_NAME: ')
-      if(isNull(contentNextName)) throw "axb";
+      if(isNull(contentNextName)) throw Errors.EMPTY_FIELD;
       
       contentDialogue = new Dialogue(contentName, contentText, new Next(contentNextName, contentNextType));
     } else {
@@ -118,36 +127,36 @@ function getContentDialogue(){
     if(prompt_content != "n" && prompt_content != "N"){
       console.log("\n[CHOICES]")
       let choiceName = prompt('CHOICE_NAME: ')
-      if(isNull(choiceName)) throw "axb";
+      if(isNull(choiceName)) throw Errors.EMPTY_FIELD;
 
       let choiceContent = prompt('CHOICE_CONTENT: ')
-      if(isNull(choiceContent)) throw "axb";
+      if(isNull(choiceContent)) throw Errors.EMPTY_FIELD;
 
       console.log("\n[OPTIONS]")
       let options = []
       while(true){
         let optionName = prompt('OPTION_NAME: ')
-        if(isNull(optionName)) throw "axb";
+        if(isNull(optionName)) throw Errors.EMPTY_FIELD;
 
         let optionContent = prompt('OPTION_CONTENT: ')
-        if(isNull(optionContent)) throw "axb";
+        if(isNull(optionContent)) throw Errors.EMPTY_FIELD;
 
   
         console.log("\n{OPTIONS_NEXT}\n[1]: Dialogue ||| [2]: In-Event ||| [3]: Out-Event")
-        let optionNextType = prompt('OPTION_NEXT_TYPE: ')
-        if(isNull(optionNextType)) throw "axb";
+        let optionNextType = parseInt(prompt('OPTION_NEXT_TYPE: '), 10);
+        if(isNull(optionNextType) || typeof(optionNextType)!=typeof(0)) throw Errors.INVALID_INT;
 
         if(optionNextType== "2" || optionNextType == "3"){
           let optionNextName = prompt('OPTION_NEXT_METHOD: ')
-          if(isNull(optionNextName)) throw "axb";
+          if(isNull(optionNextName)) throw Errors.EMPTY_FIELD;
 
           let optionNextDialogue = prompt('OPTION_NEXT_DIALOGUE: ')
-          if(isNull(optionNextDialogue)) throw "axb";
+          if(isNull(optionNextDialogue)) throw Errors.EMPTY_FIELD;
 
           options.push(new Option(optionName, optionContent, new Next(optionNextName, optionNextType, optionNextDialogue)))
         } else {
           let optionNextName = prompt('OPTION_NEXT_NAME: ')
-          if(isNull(optionNextName)) throw "axb";
+          if(isNull(optionNextName)) throw Errors.EMPTY_FIELD;
           
           options.push(new Option(optionName, optionContent, new Next(optionNextName, optionNextType, optionNextName)))
         }
@@ -181,13 +190,18 @@ function getContentQuest(){
 
     console.log("\n[DATA]");
     let questName = prompt('QUEST_NAME: ')
-    if(isNull(questName)) throw "axb";
+    if(isNull(questName)) throw Errors.EMPTY_FIELD;
+    console.log("\n[DATA]");
+
+    let questHeader = prompt('QUEST_HEADER: ')
+    if(isNull(questHeader)) throw Errors.EMPTY_FIELD;
 
     let questContent = prompt('QUEST_CONTENT: ')
-    if(isNull(questContent)) throw "axb";
+    if(isNull(questContent)) throw Errors.EMPTY_FIELD;
 
 
     let step_list = [];
+    let prompt_content;
     
     while(true){
 
@@ -197,26 +211,30 @@ function getContentQuest(){
       let stepName = prompt('STEP_NAME: ');
       if(isNull(stepName)) break;
 
-      let stepContent = prompt('STEP_CONTENT: ')
-      if(isNull(stepContent)) throw "axb";
+      let stepHeader = prompt('STEP_HEADER: ')
+      if(isNull(stepHeader)) throw Errors.EMPTY_FIELD;
 
-      let stepID = parseInt(prompt('STEP_ID: '))
-      if(isNull(stepID)) throw "axb";
+      let stepContent = prompt('STEP_CONTENT: ')
+      if(isNull(stepContent)) throw Errors.EMPTY_FIELD;
+
+      let stepID = parseInt(prompt('STEP_ID: '), 10)
+      if(isNull(stepID) || typeof(stepID)!=typeof(0)) throw Errors.INVALID_INT;
 
       prompt_content = prompt('{STEP_NEXT} (n/y): ')
-      if(isNull(prompt_content)) throw "axb";
+      if(isNull(prompt_content)) throw Errors.EMPTY_FIELD;
       
       if(prompt_content != "n" && prompt_content != "N"){
+
         console.log("\n[STEP_NEXT]\n[1]: Step ||| [2]: Quest ||| [3]: Event")
-        let stepNextType = prompt('STEP_NEXT_TYPE: ')
-        if(isNull(stepNextType)) throw "axb";
+        let stepNextType = parseInt(prompt('STEP_NEXT_TYPE: '), 10);
+        if(isNull(stepNextType) || typeof(stepNextType)!=typeof(0)) throw Errors.INVALID_INT;
         
         let stepNextName = prompt('STEP_NEXT_NAME: ')
-        if(isNull(stepNextName)) throw "axb";
+        if(isNull(stepNextName)) throw Errors.EMPTY_FIELD;
         
-        contentStep = new Step(stepID, stepName, stepContent, new Next(stepNextName, stepNextType));
+        contentStep = new Step(stepID, stepName, stepHeader, stepContent, new Next(stepNextName, stepNextType));
       } else {
-        contentStep = new Step(stepID, stepName, stepContent);
+        contentStep = new Step(stepID, stepName, stepHeader, stepContent);
       }
       
       step_list.push(contentStep);
@@ -228,19 +246,20 @@ function getContentQuest(){
 
     console.log();
     prompt_content = prompt('{QUEST_NEXT} (n/y): ')
-    if(isNull(prompt_content)) throw "axb";
+    if(isNull(prompt_content)) throw Errors.EMPTY_FIELD;
           
     if(prompt_content != "n" && prompt_content != "N"){
+
       console.log("\n[QUEST_NEXT]\n[1]: Quest ||| [2]: Event")
-      let questNextType = prompt('QUEST_NEXT_TYPE: ')
-      if(isNull(questNextType)) throw "axb";
+      let questNextType = parseInt(prompt('QUEST_NEXT_TYPE: '), 10);
+      if(isNull(questNextType) || typeof(questNextType)!=typeof(0)) throw Errors.INVALID_INT;
         
       let questNextName = prompt('QUEST_NEXT_NAME: ')
-      if(isNull(questNextName)) throw "axb";
+      if(isNull(questNextName)) throw Errors.EMPTY_FIELD;
         
-      contentQuest = new Quest(questName, questContent, step_list, new Next(questNextName, questNextType));
+      contentQuest = new Quest(questName, questHeader, questContent, step_list, new Next(questNextName, questNextType));
     } else {
-      contentQuest = new Quest(questName, questContent, step_list);
+      contentQuest = new Quest(questName, questHeader, questContent, step_list);
     }
 
     contentQuest.orderSteps();
@@ -254,8 +273,10 @@ function getContentQuest(){
   return quests;
 }
 
+// Checks if string is empty, number is invalid (NaN) or object is null/undefined
 function isNull(object){
-  if(object == null || object == undefined) return true;
+  if(object == null || object == undefined || object == "" || (typeof(object)==typeof(0) && isNaN(object)) ) return true;
+  return false;
 }
 
 // Auto exec
@@ -266,15 +287,14 @@ console.log("\n|   Support me on Github!   https://github.com/AxelBilla/   |");
 console.log("\n-------------------------------------------------------------\n\n");
 
 console.log('-- What do you want to generate?\n\n[1]: Dialogues | [2]: Quests')
-let prompt_content = prompt('TYPE: ');
-if(isNull(prompt_content)) throw "axb";
+let getType = parseInt(prompt('TYPE: '), 10);
+if(isNull(getType) || typeof(getType)!=typeof(0)) throw Errors.INVALID_INT;
 
-prompt_content = parseInt(prompt_content);
-switch(prompt_content){
+switch(getType){
   case 1:
-    addContent(getPath(), getContentDialogue(), prompt_content);
+    addContent(getPath(), getContentDialogue(), getType);
     break;
   case 2:
-    addContent(getPath(), getContentQuest(), prompt_content);
+    addContent(getPath(), getContentQuest(), getType);
     break;
 }
