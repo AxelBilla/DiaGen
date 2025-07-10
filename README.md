@@ -38,11 +38,13 @@ Tool made to ease the creation of dialogues, strictly for personal use.
 ## Quests
 **[QUESTS]** <br>
 &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;->&nbsp;**[QUEST_NAME]** <br>
+&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;->&nbsp;**[HEADER]** <br>
 &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;->&nbsp;**[CONTENT]** <br>
 &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;->&nbsp;**(isCompleted)** <sub>(Boolean, **false** by default)</sub> <br>
 &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;->&nbsp;**[STEPS]** <br>
 &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;->&nbsp;**(STEP_ID)** <sub>(Integer)</sub> <br>
 &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;->&nbsp;**[STEP_NAME]** <br>
+&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;->&nbsp;**[HEADER]** <br>
 &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;->&nbsp;**[CONTENT]** <br>
 &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;->&nbsp;**(isCompleted)** <sub>(Boolean, **false** by default)</sub> <br>
 &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;->&nbsp;**[NEXT]** <br>
