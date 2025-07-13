@@ -102,28 +102,10 @@ function getContentDialogue(){
 
     let contentText = prompt('DIALOGUE_TEXT: ');
     if(isNull(contentText)) break;
-
-    prompt_content = prompt('{DIA_NEXT} (n/y): ')
-    if(isNull(prompt_content)) throw Errors.EMPTY_FIELD;
-    
-    let contentDialogue
-    
-    if(prompt_content != "n" && prompt_content != "N"){
-
-      console.log("[DIA_NEXT]\n[1]: Dialogue ||| [2]: In-Event ||| [3]: Out-Event")
-      let contentNextType = parseInt(prompt('DIALOGUE_NEXT_TYPE: '), 10);
-      if(isNull(contentNextType) || typeof(contentNextType)!=typeof(0)) throw Errors.INVALID_INT;
-      
-      let contentNextName = prompt('DIALOGUE_NEXT_NAME: ')
-      if(isNull(contentNextName)) throw Errors.EMPTY_FIELD;
-      
-      contentDialogue = new Dialogue(contentName, contentText, new Next(contentNextName, contentNextType));
-    } else {
-      contentDialogue = new Dialogue(contentName, contentText);
-    }
     
 
     prompt_content = prompt('{CHOICES} (n/y): ')
+    let choice_temp;
     if(prompt_content != "n" && prompt_content != "N"){
       console.log("\n[CHOICES]")
       let choiceName = prompt('CHOICE_NAME: ')
@@ -134,6 +116,7 @@ function getContentDialogue(){
 
       console.log("\n[OPTIONS]")
       let options = []
+
       while(true){
         let optionName = prompt('OPTION_NAME: ')
         if(isNull(optionName)) throw Errors.EMPTY_FIELD;
@@ -142,15 +125,15 @@ function getContentDialogue(){
         if(isNull(optionContent)) throw Errors.EMPTY_FIELD;
 
   
-        console.log("\n{OPTIONS_NEXT}\n[1]: Dialogue ||| [2]: In-Event ||| [3]: Out-Event")
+        console.log("\n{OPTIONS_NEXT}\n[1]: Dialogue ||| [2]: In-Event ||| [3]: Out-Event ||| [4]: Quest ||| [5]: Step")
         let optionNextType = parseInt(prompt('OPTION_NEXT_TYPE: '), 10);
         if(isNull(optionNextType) || typeof(optionNextType)!=typeof(0)) throw Errors.INVALID_INT;
 
-        if(optionNextType== "2" || optionNextType == "3"){
-          let optionNextName = prompt('OPTION_NEXT_METHOD: ')
+        if(optionNextType== 2 || optionNextType == 3 || optionNextType == 5){
+          let optionNextName = prompt('OPTION_NEXT_METHOD/QUEST: ')
           if(isNull(optionNextName)) throw Errors.EMPTY_FIELD;
 
-          let optionNextDialogue = prompt('OPTION_NEXT_DIALOGUE: ')
+          let optionNextDialogue = prompt('OPTION_NEXT_DIALOGUE/STEP: ')
           if(isNull(optionNextDialogue)) throw Errors.EMPTY_FIELD;
 
           options.push(new Option(optionName, optionContent, new Next(optionNextName, optionNextType, optionNextDialogue)))
@@ -165,8 +148,58 @@ function getContentDialogue(){
         console.log();
         if(prompt_content == "n" || prompt_content == "N") break; 
       }
-      contentDialogue.addChoice(new Choice(choiceName, choiceContent, options))
+      choice_temp = new Choice(choiceName, choiceContent, options)
     }; 
+
+    prompt_content = prompt('{DIA_NEXT} (n/y): ')
+    if(isNull(prompt_content)) throw Errors.EMPTY_FIELD;
+    
+    let contentDialogue
+    
+    if(prompt_content != "n" && prompt_content != "N"){
+
+      console.log("[DIA_NEXT]\n[1]: Dialogue ||| [2]: In-Event ||| [3]: Out-Event ||| [4]: Quest ||| [5]: Step")
+      let contentNextType = parseInt(prompt('DIALOGUE_NEXT_TYPE: '), 10);
+      if(isNull(contentNextType) || typeof(contentNextType)!=typeof(0)) throw Errors.INVALID_INT;
+      
+      if(contentNextType == 2 || contentNextType == 3 || contentNextType == 5){
+        let contentNextName = prompt('DIALOGUE_NEXT_METHOD/QUEST: ')
+        if(isNull(contentNextName)) throw Errors.EMPTY_FIELD;
+
+        let contentNextDialogue = prompt('DIALOGUE_NEXT_DIALOGUE/STEP: ')
+        if(isNull(contentNextDialogue)) throw Errors.EMPTY_FIELD;
+
+        contentDialogue = new Dialogue(contentName, contentText, new Next(contentNextName, contentNextType, contentNextDialogue));
+      }
+      else if(contentNextType == 4){
+        let contentNextQuest = prompt('DIALOGUE_NEXT_QUEST: ')
+        if(isNull(contentNextQuest)) throw Errors.EMPTY_FIELD;
+
+        let prompt_content = prompt('[specificStep?] (n/y): ');
+        if(isNull(prompt_content)) throw Errors.EMPTY_FIELD;
+        
+        if(prompt_content != "n" && prompt_content != "N"){
+          let contentNextQuestStep = prompt('DIALOGUE_NEXT_QUEST_STEP: ')
+          if(isNull(contentNextQuestStep)) throw Errors.EMPTY_FIELD;
+
+          contentDialogue = new Dialogue(contentName, contentText, new Next(contentNextQuest, contentNextType, contentNextQuestStep));
+        }
+        else {
+          contentDialogue = new Dialogue(contentName, contentText, new Next(contentNextName, contentNextType));
+        }
+      } 
+      else {
+        let contentNextName = prompt('DIALOGUE_NEXT_NAME: ')
+        if(isNull(contentNextName)) throw Errors.EMPTY_FIELD;
+        
+        contentDialogue = new Dialogue(contentName, contentText, new Next(contentNextName, contentNextType));
+      }
+    } else {
+      contentDialogue = new Dialogue(contentName, contentText);
+    }
+
+    if(choice_temp != null) contentDialogue.addChoice(choice_temp);
+
     contentState.addDialogue(contentDialogue);
     prompt_content = prompt('[|ANOTHER DIALOGUE|] (n/y): ')
     if(prompt_content == "n" || prompt_content == "N") break; 
@@ -275,7 +308,7 @@ function getContentQuest(){
 
 // Checks if string is empty, number is invalid (NaN) or object is null/undefined
 function isNull(object){
-  if(object == null || object == undefined || object == "" || (typeof(object)==typeof(0) && isNaN(object)) ) return true;
+  if(object === null || object === undefined || object === "" || (typeof(object)===typeof(0) && isNaN(object)) ) return true;
   return false;
 }
 
