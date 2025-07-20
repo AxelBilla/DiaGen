@@ -1,5 +1,5 @@
 import { match } from "assert";
-import {Chapter, Location, Character, State, Dialogue, Choice, Option, Next, Quest, Step} from "./diaGen_class.js" // Chapter -> Location -> Character -> State -> Dialogue
+import {Chapter, Location, Character, State, Dialogue, Choice, Option, Next, Quest, Step, Parameter} from "./diaGen_class.js" // Chapter -> Location -> Character -> State -> Dialogue
 
 import { createRequire } from "module";
 import { dirname } from "path";
@@ -125,18 +125,43 @@ function getContentDialogue(){
         if(isNull(optionContent)) throw Errors.EMPTY_FIELD;
 
   
-        console.log("\n{OPTIONS_NEXT}\n[1]: Dialogue ||| [2]: In-Event ||| [3]: Out-Event ||| [4]: Quest ||| [5]: Step")
+        console.log("\n{OPTIONS_NEXT}\n[1]: Dialogue ||| [2]: In-Event ||| [3]: Out-Event")
         let optionNextType = parseInt(prompt('OPTION_NEXT_TYPE: '), 10);
         if(isNull(optionNextType) || typeof(optionNextType)!=typeof(0)) throw Errors.INVALID_INT;
 
-        if(optionNextType== 2 || optionNextType == 3 || optionNextType == 5){
-          let optionNextName = prompt('OPTION_NEXT_METHOD/QUEST: ')
+        if(optionNextType== 2 || optionNextType == 3){
+          let optionNextName = prompt('OPTION_NEXT_METHOD: ')
           if(isNull(optionNextName)) throw Errors.EMPTY_FIELD;
 
-          let optionNextDialogue = prompt('OPTION_NEXT_DIALOGUE/STEP: ')
-          if(isNull(optionNextDialogue)) throw Errors.EMPTY_FIELD;
+          let optionNextDialogue = prompt('OPTION_NEXT_DIALOGUE (opt.): ')
+          if(isNull(optionNextDialogue)) optionNextDialogue = null; // from empty string to real truly value
 
-          options.push(new Option(optionName, optionContent, new Next(optionNextName, optionNextType, optionNextDialogue)))
+          let parameters={}
+
+          let prompt_content = prompt("{OPTION_PARAMETERS} (n/y):");
+          if(isNull(prompt_content)) throw Errors.EMPTY_FIELD;
+          if(prompt_content != "n" || prompt_content != "N"){
+            while(true){
+              console.log()
+
+              let parameterPosition = parseInt(prompt('PARAMETER_POSITION: '), 10)
+              if(isNull(parameterPosition) || typeof(parameterPosition)!=typeof(0) ) throw Errors.INVALID_INT;
+
+              let parameterType = prompt('PARAMETER_TYPE: ')
+              if(isNull(parameterType)) throw Errors.EMPTY_FIELD;
+
+              let parameterValue = prompt('PARAMETER_VALUE: ')
+              if(isNull(parameterValue)) throw Errors.EMPTY_FIELD;
+
+              parameters[parameterPosition] = new Parameter(parameterPosition, parameterType, parameterValue);
+              
+              prompt_content = prompt('[|ANOTHER PARAMETER|] (n/y): ')
+              console.log();
+              if(prompt_content == "n" || prompt_content == "N") break; 
+            }
+          }
+
+          options.push(new Option(optionName, optionContent, new Next(optionNextName, optionNextType, optionNextDialogue, parameters)))
         } else {
           let optionNextName = prompt('OPTION_NEXT_NAME: ')
           if(isNull(optionNextName)) throw Errors.EMPTY_FIELD;
@@ -158,35 +183,43 @@ function getContentDialogue(){
     
     if(prompt_content != "n" && prompt_content != "N"){
 
-      console.log("[DIA_NEXT]\n[1]: Dialogue ||| [2]: In-Event ||| [3]: Out-Event ||| [4]: Quest ||| [5]: Step")
+      console.log("\n[DIA_NEXT]\n[1]: Dialogue ||| [2]: In-Event ||| [3]: Out-Event")
       let contentNextType = parseInt(prompt('DIALOGUE_NEXT_TYPE: '), 10);
       if(isNull(contentNextType) || typeof(contentNextType)!=typeof(0)) throw Errors.INVALID_INT;
       
-      if(contentNextType == 2 || contentNextType == 3 || contentNextType == 5){
-        let contentNextName = prompt('DIALOGUE_NEXT_METHOD/QUEST: ')
+      if(contentNextType == 2 || contentNextType == 3){
+        let contentNextName = prompt('DIALOGUE_NEXT_METHOD: ')
         if(isNull(contentNextName)) throw Errors.EMPTY_FIELD;
 
-        let contentNextDialogue = prompt('DIALOGUE_NEXT_DIALOGUE/STEP: ')
-        if(isNull(contentNextDialogue)) throw Errors.EMPTY_FIELD;
-
-        contentDialogue = new Dialogue(contentName, contentText, new Next(contentNextName, contentNextType, contentNextDialogue));
-      }
-      else if(contentNextType == 4){
-        let contentNextQuest = prompt('DIALOGUE_NEXT_QUEST: ')
-        if(isNull(contentNextQuest)) throw Errors.EMPTY_FIELD;
-
-        let prompt_content = prompt('[specificStep?] (n/y): ');
-        if(isNull(prompt_content)) throw Errors.EMPTY_FIELD;
+        let contentNextDialogue = prompt('DIALOGUE_NEXT_DIALOGUE (opt.): ')
+        if(isNull(contentNextDialogue)) contentNextDialogue = null; // from empty string to real truly value
         
-        if(prompt_content != "n" && prompt_content != "N"){
-          let contentNextQuestStep = prompt('DIALOGUE_NEXT_QUEST_STEP: ')
-          if(isNull(contentNextQuestStep)) throw Errors.EMPTY_FIELD;
+        let parameters={}
 
-          contentDialogue = new Dialogue(contentName, contentText, new Next(contentNextQuest, contentNextType, contentNextQuestStep));
+        let prompt_content = prompt("{NEXT_PARAMETERS} (n/y):");
+        if(isNull(prompt_content)) throw Errors.EMPTY_FIELD;
+        if(prompt_content != "n" || prompt_content != "N"){
+          while(true){
+            console.log();
+
+            let parameterPosition = parseInt(prompt('PARAMETER_POSITION: '), 10)
+            if(isNull(parameterPosition) || typeof(parameterPosition)!=typeof(0) ) throw Errors.INVALID_INT;
+
+            let parameterType = prompt('PARAMETER_TYPE: ')
+            if(isNull(parameterType)) throw Errors.EMPTY_FIELD;
+
+            let parameterValue = prompt('PARAMETER_VALUE: ')
+            if(isNull(parameterValue)) throw Errors.EMPTY_FIELD;
+
+            parameters[parameterPosition] = new Parameter(parameterPosition, parameterType, parameterValue);
+                
+            prompt_content = prompt('[|ANOTHER PARAMETER|] (n/y): ')
+            console.log();
+            if(prompt_content == "n" || prompt_content == "N") break; 
+          }
         }
-        else {
-          contentDialogue = new Dialogue(contentName, contentText, new Next(contentNextName, contentNextType));
-        }
+      
+        contentDialogue = new Dialogue(contentName, contentText, new Next(contentNextName, contentNextType, contentNextDialogue, parameters));
       } 
       else {
         let contentNextName = prompt('DIALOGUE_NEXT_NAME: ')
@@ -264,8 +297,35 @@ function getContentQuest(){
         
         let stepNextName = prompt('STEP_NEXT_NAME: ')
         if(isNull(stepNextName)) throw Errors.EMPTY_FIELD;
+
+        let parameters={}
+        if(stepNextType==3){
+
+          let prompt_content = prompt("{NEXT_PARAMETERS} (n/y):");
+          if(isNull(prompt_content)) throw Errors.EMPTY_FIELD;
+          if(prompt_content != "n" || prompt_content != "N"){
+            while(true){
+              console.log()
+
+              let parameterPosition = parseInt(prompt('PARAMETER_POSITION: '), 10)
+              if(isNull(parameterPosition) || typeof(parameterPosition)!=typeof(0) ) throw Errors.INVALID_INT;
+
+              let parameterType = prompt('PARAMETER_TYPE: ')
+              if(isNull(parameterType)) throw Errors.EMPTY_FIELD;
+
+              let parameterValue = prompt('PARAMETER_VALUE: ')
+              if(isNull(parameterValue)) throw Errors.EMPTY_FIELD;
+
+              parameters[parameterPosition] = new Parameter(parameterPosition, parameterType, parameterValue);
+                  
+              prompt_content = prompt('[|ANOTHER PARAMETER|] (n/y): ')
+              console.log();
+              if(prompt_content == "n" || prompt_content == "N") break; 
+            }
+          }
+        }
         
-        contentStep = new Step(stepID, stepName, stepHeader, stepContent, new Next(stepNextName, stepNextType));
+        contentStep = new Step(stepID, stepName, stepHeader, stepContent, new Next(stepNextName, stepNextType, null, parameters));
       } else {
         contentStep = new Step(stepID, stepName, stepHeader, stepContent);
       }
@@ -289,8 +349,35 @@ function getContentQuest(){
         
       let questNextName = prompt('QUEST_NEXT_NAME: ')
       if(isNull(questNextName)) throw Errors.EMPTY_FIELD;
+
+      let parameters={}
+      if(questNextType==2){
+
+        let prompt_content = prompt("{NEXT_PARAMETERS} (n/y):");
+        if(isNull(prompt_content)) throw Errors.EMPTY_FIELD;
+        if(prompt_content != "n" || prompt_content != "N"){
+          while(true){
+            console.log()
+
+            let parameterPosition = parseInt(prompt('PARAMETER_POSITION: '), 10)
+            if(isNull(parameterPosition) || typeof(parameterPosition)!=typeof(0) ) throw Errors.INVALID_INT;
+
+            let parameterType = prompt('PARAMETER_TYPE: ')
+            if(isNull(parameterType)) throw Errors.EMPTY_FIELD;
+
+            let parameterValue = prompt('PARAMETER_VALUE: ')
+            if(isNull(parameterValue)) throw Errors.EMPTY_FIELD;
+
+            parameters[parameterPosition] = new Parameter(parameterPosition, parameterType, parameterValue);
+                
+            prompt_content = prompt('[|ANOTHER PARAMETER|] (n/y): ')
+            console.log();
+            if(prompt_content == "n" || prompt_content == "N") break; 
+          }
+        }
+      }
         
-      contentQuest = new Quest(questName, questHeader, questContent, step_list, new Next(questNextName, questNextType));
+      contentQuest = new Quest(questName, questHeader, questContent, step_list, new Next(questNextName, questNextType, null, parameters));
     } else {
       contentQuest = new Quest(questName, questHeader, questContent, step_list);
     }

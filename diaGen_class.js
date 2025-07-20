@@ -87,10 +87,14 @@ export class Option{
 }
 
 export class Next{
-  constructor(name, type, dialogue_step){
+  constructor(name, type, dialogue_step, parameters={}){
     this.name=name;
     this.type=type;
     this.dialogue_step=dialogue_step;
+    this.parameters=parameters;
+  }
+  addParameter(parameter){
+    this.parameters[parameter.position] = parameter;
   }
 }
 
@@ -124,5 +128,13 @@ export class Step{
     this.content=content;
     this.isCompleted = false;
     this.next=next;
+  }
+}
+
+export class Parameter{
+  constructor(position, type, value){
+    this.value = value;
+    this.type = type;
+    this.position = position;
   }
 }
