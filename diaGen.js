@@ -132,14 +132,19 @@ function getContentDialogue(){
         if(optionNextType== 2 || optionNextType == 3){
           let optionNextName = prompt('OPTION_NEXT_METHOD: ')
           if(isNull(optionNextName)) throw Errors.EMPTY_FIELD;
+          
+
+          optionNextClass = prompt("NEXT_METHOD_CLASS: ");
+          if(isNull(optionNextClass)) questNextClass = null;
 
           let optionNextDialogue = prompt('OPTION_NEXT_DIALOGUE (opt.): ')
-          if(isNull(optionNextDialogue)) optionNextDialogue = null; // from empty string to real truly value
+          if(isNull(optionNextDialogue)) optionNextDialogue = null; // from empty string to real null value
 
           let parameters={}
 
           let prompt_content = prompt("{OPTION_PARAMETERS} (n/y):");
           if(isNull(prompt_content)) throw Errors.EMPTY_FIELD;
+
           if(prompt_content != "n" || prompt_content != "N"){
             while(true){
               console.log()
@@ -161,7 +166,7 @@ function getContentDialogue(){
             }
           }
 
-          options.push(new Option(optionName, optionContent, new Next(optionNextName, optionNextType, optionNextDialogue, parameters)))
+          options.push(new Option(optionName, optionContent, new Next(optionNextName, optionNextType, optionNextDialogue, optionNextClass, parameters)))
         } else {
           let optionNextName = prompt('OPTION_NEXT_NAME: ')
           if(isNull(optionNextName)) throw Errors.EMPTY_FIELD;
@@ -191,8 +196,11 @@ function getContentDialogue(){
         let contentNextName = prompt('DIALOGUE_NEXT_METHOD: ')
         if(isNull(contentNextName)) throw Errors.EMPTY_FIELD;
 
+        let contentNextClass = prompt('NEXT_METHOD_CLASS (opt.): ')
+        if(isNull(contentNextClass)) contentNextDialogue = null; // from empty string to real null value
+
         let contentNextDialogue = prompt('DIALOGUE_NEXT_DIALOGUE (opt.): ')
-        if(isNull(contentNextDialogue)) contentNextDialogue = null; // from empty string to real truly value
+        if(isNull(contentNextDialogue)) contentNextDialogue = null; // from empty string to real null value
         
         let parameters={}
 
@@ -219,7 +227,7 @@ function getContentDialogue(){
           }
         }
       
-        contentDialogue = new Dialogue(contentName, contentText, new Next(contentNextName, contentNextType, contentNextDialogue, parameters));
+        contentDialogue = new Dialogue(contentName, contentText, new Next(contentNextName, contentNextType, contentNextDialogue, contentNextClass, parameters));
       } 
       else {
         let contentNextName = prompt('DIALOGUE_NEXT_NAME: ')
@@ -297,9 +305,14 @@ function getContentQuest(){
         
         let stepNextName = prompt('STEP_NEXT_NAME: ')
         if(isNull(stepNextName)) throw Errors.EMPTY_FIELD;
-
+        
+        let stepNextClass
         let parameters={}
+        
         if(stepNextType==3){
+
+        stepNextClass = prompt('NEXT_METHOD_CLASS (opt.): ')
+        if(isNull(stepNextClass)) contentNextDialogue = null; // from empty string to real null value
 
           let prompt_content = prompt("{NEXT_PARAMETERS} (n/y):");
           if(isNull(prompt_content)) throw Errors.EMPTY_FIELD;
@@ -325,7 +338,7 @@ function getContentQuest(){
           }
         }
         
-        contentStep = new Step(stepID, stepName, stepHeader, stepContent, new Next(stepNextName, stepNextType, null, parameters));
+        contentStep = new Step(stepID, stepName, stepHeader, stepContent, new Next(stepNextName, stepNextType, null, stepNextClass, parameters));
       } else {
         contentStep = new Step(stepID, stepName, stepHeader, stepContent);
       }
@@ -350,8 +363,13 @@ function getContentQuest(){
       let questNextName = prompt('QUEST_NEXT_NAME: ')
       if(isNull(questNextName)) throw Errors.EMPTY_FIELD;
 
+      let questNextClass;
       let parameters={}
+
       if(questNextType==2){
+
+        questNextClass = prompt("NEXT_METHOD_CLASS: ");
+        if(isNull(questNextClass)) questNextClass = null;
 
         let prompt_content = prompt("{NEXT_PARAMETERS} (n/y):");
         if(isNull(prompt_content)) throw Errors.EMPTY_FIELD;
@@ -377,7 +395,7 @@ function getContentQuest(){
         }
       }
         
-      contentQuest = new Quest(questName, questHeader, questContent, step_list, new Next(questNextName, questNextType, null, parameters));
+      contentQuest = new Quest(questName, questHeader, questContent, step_list, new Next(questNextName, questNextType, null, questNextClass, parameters));
     } else {
       contentQuest = new Quest(questName, questHeader, questContent, step_list);
     }
