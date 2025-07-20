@@ -1,6 +1,7 @@
 # Dia Gen
 
-Tool made to ease the creation of dialogues, strictly for personal use.
+Tool made to ease the creation of dialogues and quests, strictly for personal use. <br>
+(used in [PROJECT_WB](https://github.com/AxelBilla/PROJECT_WB) [private] )
 <br><br>
 **Requires [Node](https://nodejs.org/)**
 <br>
