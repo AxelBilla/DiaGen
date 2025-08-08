@@ -1,5 +1,4 @@
-import { match } from "assert";
-import {Chapter, Location, Character, State, Dialogue, Choice, Option, Next, Quest, Step, Parameter} from "./diaGen_class.js" // Chapter -> Location -> Character -> State -> Dialogue
+import {Chapter, Location, Character, State, Dialogue, Choice, Option, Next, Quest, Step, Parameter, Language} from "./diaGen_class.js" // Chapter -> Location -> Character -> State -> Dialogue
 
 import { createRequire } from "module";
 import { dirname } from "path";
@@ -24,7 +23,7 @@ class Errors{
 }
 
 function addContent(file, content, type){
-  type==1 ? content = {"Chapters": content} : content = {"Quests": content};
+  type==1 ? content = {"Dialogues": content} : content = {"Quests": content};
 
   if(fs.existsSync(file.path)){ // Checks if file exists
     let contentTree = fs.readFileSync(file.path); // Gets file content
@@ -77,7 +76,12 @@ function getPath(){
 
 function getContentDialogue(){
   console.log("\n[DATA]");
-  let prompt_content = prompt('CHAPTER_NAME: ')
+
+  let prompt_content = prompt('(LANGUAGE): ')
+  if(isNull(prompt_content)) throw Errors.EMPTY_FIELD;
+  let contentLanguage = new Language(prompt_content);
+
+  prompt_content = prompt('CHAPTER_NAME: ')
   if(isNull(prompt_content)) throw Errors.EMPTY_FIELD;
   let contentChapter = new Chapter(prompt_content);
 
@@ -249,20 +253,26 @@ function getContentDialogue(){
   contentCharacter.addState(contentState);
   contentLocation.addCharacter(contentCharacter);
   contentChapter.addLocation(contentLocation);
+  contentLanguage.addChapter(contentChapter);
+  delete contentLanguage.quests;
 
-  let chapters = {} // Wrapper for all chapters
-  chapters[contentChapter.name]=contentChapter;
-  return chapters;
+  let languages = {} // Wrapper for all chapters
+  languages[contentLanguage.name]=contentLanguage;
+  return languages;
 }
 
 function getContentQuest(){
   let quests = {} // Wrapper for all quests
   
+  console.log("\n[DATA]");
+
+  let questLanguage = prompt('(LANGUAGE): ')
+  if(isNull(questLanguage)) throw Errors.EMPTY_FIELD;
+  let contentLanguage = new Language(questLanguage);
+
   while(true){
-    console.clear();
     let contentQuest;
 
-    console.log("\n[DATA]");
     let questName = prompt('QUEST_NAME: ')
     if(isNull(questName)) throw Errors.EMPTY_FIELD;
     console.log("\n[DATA]");
@@ -401,14 +411,19 @@ function getContentQuest(){
     }
 
     contentQuest.orderSteps();
-    quests[contentQuest.name]=contentQuest;
+    contentLanguage.addQuest(contentQuest);
     
     console.log();
     prompt_content = prompt('[|ANOTHER QUEST|] (n/y): ')
     if(prompt_content == "n" || prompt_content == "N") break; 
+    console.clear();
   }
 
-  return quests;
+  let languages = {} // Wrapper for all languages
+  delete contentLanguage.chapters;
+  languages[contentLanguage.name]=contentLanguage;
+
+  return languages;
 }
 
 // Checks if string is empty, number is invalid (NaN) or object is null/undefined

@@ -1,5 +1,22 @@
 const ReducedMode = false;
 
+export class Language{
+  constructor(name){
+    this.name=name;
+    this.chapters={};
+    this.quests={};
+  }
+  addChapter(chapter){
+      this.chapters[chapter.name]=chapter;
+  }
+  addQuest(quest){
+      this.quests[quest.name]=quest;
+  }
+}
+
+
+// DIALOGUES
+
 export class Chapter{
   constructor(name, locations={}){
     this.name=name;
