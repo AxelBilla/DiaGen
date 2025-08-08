@@ -104,11 +104,11 @@ export class Option{
 }
 
 export class Next{
-  constructor(name, type, dialogue_step, parent_class, parameters={}){
+  constructor(name, type, dialogue, parent_class, parameters={}){
     this.name=name;
     this.type=type;
-    this.dialogue_step=dialogue_step;
-    this.class = parent_class;
+    this.dialogue=dialogue;
+    this.method_class = parent_class;
     this.parameters=parameters;
   }
   addParameter(parameter){

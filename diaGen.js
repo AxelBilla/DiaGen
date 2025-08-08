@@ -138,7 +138,7 @@ function getContentDialogue(){
           if(isNull(optionNextName)) throw Errors.EMPTY_FIELD;
           
 
-          optionNextClass = prompt("NEXT_METHOD_CLASS: ");
+          let optionNextClass = prompt("NEXT_METHOD_CLASS: ");
           if(isNull(optionNextClass)) questNextClass = null;
 
           let optionNextDialogue = prompt('OPTION_NEXT_DIALOGUE (opt.): ')
