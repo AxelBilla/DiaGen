@@ -131,7 +131,7 @@ function getContentDialogue(){
         if(isNull(optionContent)) throw Errors.EMPTY_FIELD;
 
   
-        console.log("\n{OPTIONS_NEXT}\n[1]: Dialogue ||| [2]: In-Event ||| [3]: Out-Event ||| [4]: Choice")
+        console.log("\n{OPTIONS_NEXT}\n[1]: Dialogue ||| [2]: In-Event ||| [3]: Out-Event ||| [4]: Choice ||| [X]: CUSTOM ")
         let optionNextType = parseInt(prompt('OPTION_NEXT_TYPE: '), 10);
         if(isNull(optionNextType) || typeof(optionNextType)!=typeof(0)) throw Errors.INVALID_INT;
 
@@ -201,7 +201,7 @@ function getContentDialogue(){
     
     if(prompt_content != "n" && prompt_content != "N"){
 
-      console.log("\n[DIA_NEXT]\n[1]: Dialogue ||| [2]: In-Event ||| [3]: Out-Event")
+      console.log("\n[DIA_NEXT]\n[1]: Dialogue ||| [2]: In-Event ||| [3]: Out-Event ||| [4]: Choice ||| [X]: CUSTOM ")
       let contentNextType = parseInt(prompt('DIALOGUE_NEXT_TYPE: '), 10);
       if(isNull(contentNextType) || typeof(contentNextType)!=typeof(0)) throw Errors.INVALID_INT;
       
@@ -319,7 +319,7 @@ function getContentQuest(){
       
       if(prompt_content != "n" && prompt_content != "N"){
 
-        console.log("\n[STEP_NEXT]\n[1]: Step ||| [2]: Quest ||| [3]: Event")
+        console.log("\n[STEP_NEXT]\n[1]: Step ||| [2]: Quest ||| [3]: Event ||| [X]: CUSTOM ")
         let stepNextType = parseInt(prompt('STEP_NEXT_TYPE: '), 10);
         if(isNull(stepNextType) || typeof(stepNextType)!=typeof(0)) throw Errors.INVALID_INT;
         
@@ -388,7 +388,7 @@ function getContentQuest(){
           
     if(prompt_content != "n" && prompt_content != "N"){
 
-      console.log("\n[QUEST_NEXT]\n[1]: Quest ||| [2]: Event")
+      console.log("\n[QUEST_NEXT]\n[1]: Quest ||| [2]: Event ||| [X]: CUSTOM ")
       let questNextType = parseInt(prompt('QUEST_NEXT_TYPE: '), 10);
       if(isNull(questNextType) || typeof(questNextType)!=typeof(0)) throw Errors.INVALID_INT;
         
