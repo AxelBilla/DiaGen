@@ -12,8 +12,10 @@ const path = require('path');
 const fs = require('fs');
 const prompt = require('prompt-sync')();
 
-if (!fs.existsSync(__dirname+"/dia_output/")){
-    fs.mkdirSync(__dirname+"/dia_output/"); // Creates an output folder
+const output_folder = "/dia_output/"
+
+if (!fs.existsSync(__dirname+"/"+output_folder+"/")){
+    fs.mkdirSync(__dirname+"/"+output_folder+"/"); // Creates an output folder
 }
 
 
@@ -70,7 +72,7 @@ function getPath(){
   const fileName = prompt('FILE_NAME: ');
   if(isNull(fileName)) throw ""; // Throws an error to cancel
 
-  const filePath = path.join(__dirname+"/dia_output/", fileName+".json"); // Gives an extension & creates file
+  const filePath = path.join(__dirname+"/"+output_folder+"/", fileName+".json"); // Gives an extension & creates file
   return {path: filePath, name: fileName};
 }
 
@@ -129,7 +131,7 @@ function getContentDialogue(){
         if(isNull(optionContent)) throw Errors.EMPTY_FIELD;
 
   
-        console.log("\n{OPTIONS_NEXT}\n[1]: Dialogue ||| [2]: In-Event ||| [3]: Out-Event")
+        console.log("\n{OPTIONS_NEXT}\n[1]: Dialogue ||| [2]: In-Event ||| [3]: Out-Event ||| [4]: Choice")
         let optionNextType = parseInt(prompt('OPTION_NEXT_TYPE: '), 10);
         if(isNull(optionNextType) || typeof(optionNextType)!=typeof(0)) throw Errors.INVALID_INT;
 
@@ -149,7 +151,7 @@ function getContentDialogue(){
           let prompt_content = prompt("{OPTION_PARAMETERS} (n/y):");
           if(isNull(prompt_content)) throw Errors.EMPTY_FIELD;
 
-          if(prompt_content != "n" || prompt_content != "N"){
+          if(prompt_content != "n" && prompt_content != "N"){
             while(true){
               console.log()
 
@@ -168,14 +170,21 @@ function getContentDialogue(){
               console.log();
               if(prompt_content == "n" || prompt_content == "N") break; 
             }
+
+            options.push(new Option(optionName, optionContent, new Next(optionNextName, optionNextType, optionNextDialogue, optionNextClass, parameters)))
           }
 
-          options.push(new Option(optionName, optionContent, new Next(optionNextName, optionNextType, optionNextDialogue, optionNextClass, parameters)))
+          let optionNext = new Next(optionNextName, optionNextType, optionNextDialogue, optionNextClass);
+          delete optionNext.parameters;
+          options.push(new Option(optionName, optionContent, optionNext));
+
         } else {
           let optionNextName = prompt('OPTION_NEXT_NAME: ')
           if(isNull(optionNextName)) throw Errors.EMPTY_FIELD;
           
-          options.push(new Option(optionName, optionContent, new Next(optionNextName, optionNextType, optionNextName)))
+          let optionNext = new Next(optionNextName, optionNextType, optionNextName);
+          delete optionNext.parameters;
+          options.push(new Option(optionName, optionContent, optionNext));
         }
         
         prompt_content = prompt('[|ANOTHER OPTION|] (n/y): ')
@@ -210,7 +219,7 @@ function getContentDialogue(){
 
         let prompt_content = prompt("{NEXT_PARAMETERS} (n/y):");
         if(isNull(prompt_content)) throw Errors.EMPTY_FIELD;
-        if(prompt_content != "n" || prompt_content != "N"){
+        if(prompt_content != "n" && prompt_content != "N"){
           while(true){
             console.log();
 
@@ -286,6 +295,7 @@ function getContentQuest(){
 
     let step_list = [];
     let prompt_content;
+    let stepNext;
     
     while(true){
 
@@ -324,9 +334,9 @@ function getContentQuest(){
         stepNextClass = prompt('NEXT_METHOD_CLASS (opt.): ')
         if(isNull(stepNextClass)) contentNextDialogue = null; // from empty string to real null value
 
-          let prompt_content = prompt("{NEXT_PARAMETERS} (n/y):");
+          let prompt_content = prompt("{NEXT_PARAMETERS} (n/y): ");
           if(isNull(prompt_content)) throw Errors.EMPTY_FIELD;
-          if(prompt_content != "n" || prompt_content != "N"){
+          if(prompt_content != "n" && prompt_content != "N"){
             while(true){
               console.log()
 
@@ -343,12 +353,24 @@ function getContentQuest(){
                   
               prompt_content = prompt('[|ANOTHER PARAMETER|] (n/y): ')
               console.log();
-              if(prompt_content == "n" || prompt_content == "N") break; 
+              if(prompt_content == "n" || prompt_content == "N") break
             }
+
+            stepNext = new Next(stepNextName, stepNextType, null, stepNextClass, parameters)
+            delete stepNext.dialogue
+
+          } else {
+            stepNext = new Next(stepNextName, stepNextType, null, stepNextClass)
+            delete stepNext.dialogue
+            delete stepNext.parameters
           }
+        } else {
+          stepNext = new Next(stepNextName, stepNextType)
+          delete stepNext.dialogue
+          delete stepNext.method_class
+          delete stepNext.parameters
         }
-        
-        contentStep = new Step(stepID, stepName, stepHeader, stepContent, new Next(stepNextName, stepNextType, null, stepNextClass, parameters));
+        contentStep = new Step(stepID, stepName, stepHeader, stepContent, stepNext);
       } else {
         contentStep = new Step(stepID, stepName, stepHeader, stepContent);
       }
@@ -383,7 +405,7 @@ function getContentQuest(){
 
         let prompt_content = prompt("{NEXT_PARAMETERS} (n/y):");
         if(isNull(prompt_content)) throw Errors.EMPTY_FIELD;
-        if(prompt_content != "n" || prompt_content != "N"){
+        if(prompt_content != "n" && prompt_content != "N"){
           while(true){
             console.log()
 
